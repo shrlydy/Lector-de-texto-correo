@@ -21,7 +21,7 @@ contours, _ = cv.findContours(blurred, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
 #Crea una mascara blanca en la imagen
 mask = np.zeros_like(img)
-
+#efdfdg
 #Quita objetos pequeños
 #for cnt in contours:
  #   area = cv.contourArea(cnt)
