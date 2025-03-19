@@ -49,6 +49,20 @@ text = pytesseract.image_to_string(equalized, config=custom_config)
 print("Texto extraído con OCR:")
 print(text)
 
+#Crea una mascara blanca en la imagen
+mask = np.zeros_like(img)
+#efdfdg
+#Quita objetos pequeños
+#for cnt in contours:
+ #   area = cv.contourArea(cnt)
+  #  if area > 500:
+   #     cv.drawContours(mask, [cnt], -1, (255), thickness=cv.FILLED)
+
+#Aplicar mascara a la imagen original
+result = cv.bitwise_and(blurred, mask)
+
+#Resultados con matplotlib
+plt.figure(figsize=(10,4))
 # Definir las frases clave
 frases_clave = ["De: Karen", "Para: Dylan"]
 
