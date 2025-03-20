@@ -1,60 +1,58 @@
 import numpy as np
-import cv2 as cv
 from matplotlib import pyplot as plt
 import pytesseract
+from email.mime.text import MIMEText
 
+# *Configuración de correos*
+correo_general = "dp17613@gmail.com"
+contraseña_general = "nqcw nrni jjnc hywd"
+destinatario_general = "a01540618@tec.mx"
 
-# Carga la imagen en escala de frises
-img = cv.imread('Karen2.jpeg', cv.IMREAD_GRAYSCALE)
-assert img is not None, "File could not be read, check with os.path.exists()"
+correo_dylan = "moscanegra@gmail.com"  #Otro correo para enviar si es de Dylan a Karen
+contraseña_dylan = "cacacaca"
+destinatario_dylan = "karencorreo@gmail.com"
 
-#Aplica un limite a las placas negras
-_, thresh = cv.threshold(img, 100, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
+# *Frase clave para detección flexible*
+frase_dylan_a_karen = "De: Dylan Para: Karen"
 
+# *Lógica para envío de correos*
+if text:
+    if similaridad_texto(text, frase_dylan_a_karen):
+        # Extraer el texto debajo de "De: Dylan Para: Karen"
+        texto_bajo = text.split(frase_dylan_a_karen, 1)[1].strip() if frase_dylan_a_karen in text else text
+        print(f"Texto debajo: {texto_bajo}")
 
+        # Enviar desde el otro correo
+        asunto = "Mensaje de Dylan a Karen Detectado"
+        mensaje = f"Se ha detectado un mensaje de Dylan para Karen.\n\nTexto extraído:\n'{texto_bajo}'"
+        enviar_correo(asunto, mensaje, destinatario_dylan, correo_dylan, contraseña_dylan)
 
-#Aplica una medio de borradopara eliminar ruido
-blurred = cv.GaussianBlur(thresh, (5,5), 0)
+    else:
+        # Enviar desde el correo general
+        asunto = "Texto Detectado en Imagen"
+        mensaje = f"Se detectó el siguiente texto en la imagen:\n\n{text}"
+        enviar_correo(asunto, mensaje, destinatario_general, correo_general, contraseña_general)
 
-# Encontrar contornos
-contours, _ = cv.findContours(blurred, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+else:
+    print("No se detectó texto en la imagen.")
 
-#Crea una mascara blanca en la imagen
-mask = np.zeros_like(img)
-#efdfdg
-#Quita objetos pequeños
-#for cnt in contours:
- #   area = cv.contourArea(cnt)
-  #  if area > 500:
-   #     cv.drawContours(mask, [cnt], -1, (255), thickness=cv.FILLED)
+# *Mostrar imágenes procesadas*
+plt.figure(figsize=(10, 4))
 
-#Aplicar mascara a la imagen original
-result = cv.bitwise_and(blurred, mask)
-
-#Resultados con matplotlib
-plt.figure(figsize=(10,4))
-
-plt.subplot(1,3,1)
+plt.subplot(1, 3, 1)
 plt.imshow(img, cmap='gray')
 plt.title('1. Imagen Original')
 plt.xticks([]), plt.yticks([])
 
-plt.subplot(1,3,2)
+plt.subplot(1, 3, 2)
 plt.imshow(blurred, cmap='gray')
 plt.title('2. Umbral + Blur')
 plt.xticks([]), plt.yticks([])
 
-plt.subplot(1,3,3)
-plt.imshow(result, cmap='gray')
-plt.title('3. Barcode Removed')
+plt.subplot(1, 3, 3)
+plt.imshow(equalized, cmap='gray')
+plt.title('3. Contraste Mejorado')
 plt.xticks([]), plt.yticks([])
 
 plt.tight_layout()
 plt.show()
-
-
-#OCR
-config = "--psm 6"  # Modo de segmentación óptimo para texto disperso
-text = pytesseract.image_to_string(result, config=config)
-print(text)
-
